@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Addendum Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-text {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .copy-btn {
+            background: #28a745;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .reset-btn {
+            background: #6c757d;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginScreen">
+            <h1>Access Required</h1>
+            <div class="form-group">
+                <label for="passwordInput">Enter Password:</label>
+                <input type="password" id="passwordInput" placeholder="Enter password">
+            </div>
+            <button type="button" onclick="checkPassword()">Login</button>
+            <div id="errorMessage" style="color: #dc3545; margin-top: 15px; display: none; text-align: center; font-weight: 600;">
+                Incorrect password. Please try again.
+            </div>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <h1>Insurance Addendum Generator</h1>
+
+            <form id="addendumForm">
+            <div class="form-group">
+                <label for="template_selection">Select Template:</label>
+                <select id="template_selection" name="template_selection" required>
+                    <option value="1">Basic P&I Addendum (Turkish)</option>
+                    <option value="2">Basic P&I Addendum (English)</option>
+                    <option value="3">Basic H&M Addendum (Turkish)</option>
+                    <option value="4">Basic H&M Addendum (English)</option>
+                    <option value="5">Cargo Wetness P&I (Turkish)</option>
+                    <option value="6">Cargo Wetness P&I (English)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="survey_date">Survey Date:</label>
+                <input type="text" id="survey_date" name="survey_date" placeholder="e.g., 15.01.2026" required>
+            </div>
+
+            <div class="form-group">
+                <label for="survey_place">Survey Place:</label>
+                <input type="text" id="survey_place" name="survey_place" placeholder="e.g., Istanbul" required>
+            </div>
+
+            <div class="form-group">
+                <label for="defect_nr">Number of Defects:</label>
+                <input type="text" id="defect_nr" name="defect_nr" placeholder="e.g., 5" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notinspected_nr">Number of Not Inspected:</label>
+                <input type="text" id="notinspected_nr" name="notinspected_nr" placeholder="e.g., 2" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline">Deadline:</label>
+                <input type="text" id="deadline" name="deadline" placeholder="e.g., 30.02.2026" required>
+            </div>
+
+            <div class="form-group hidden" id="reasonGroup">
+                <label for="reason_selection">Reason:</label>
+                <select id="reason_selection" name="reason_selection">
+                    <option value="1">Unsatisfactory Result / Olumsuz Sonuçlanması</option>
+                    <option value="2">Not Being Conducted / Gerçekleştirilememesi</option>
+                </select>
+            </div>
+
+            <button type="submit">Generate Addendum</button>
+        </form>
+
+        <div class="result-container" id="resultContainer">
+            <h2 style="margin-bottom: 15px; color: #667eea;">Generated Addendum:</h2>
+            <div class="result-text" id="resultText"></div>
+            <div class="button-group">
+                <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button type="button" class="reset-btn" onclick="resetForm()">Generate Another</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        // Password protection
+        const correctPassword = "TPI2026"; // Change this to your desired password
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (input === correctPassword) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                errorMessage.style.display = 'none';
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // Allow Enter key to submit password
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        });
+
+        const templateSelect = document.getElementById('template_selection');
+        const reasonGroup = document.getElementById('reasonGroup');
+        const form = document.getElementById('addendumForm');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultText = document.getElementById('resultText');
+
+        templateSelect.addEventListener('change', function() {
+            if (this.value === '5' || this.value === '6') {
+                reasonGroup.classList.remove('hidden');
+            } else {
+                reasonGroup.classList.add('hidden');
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const templateSelection = parseInt(document.getElementById('template_selection').value);
+            const surveyDate = document.getElementById('survey_date').value;
+            const surveyPlace = document.getElementById('survey_place').value;
+            const defectNr = document.getElementById('defect_nr').value;
+            const notinspectedNr = document.getElementById('notinspected_nr').value;
+            const deadline = document.getElementById('deadline').value;
+
+            let result = '';
+
+            if (templateSelection === 1) {
+                result = `Geminizde ${surveyDate} tarihinde ${surveyPlace} Limanında Türk P ve I Sigorta A.S Su Araçları Sorumluluk Sigortası özel şartlarının 15.3 ve 15.4 numaralı maddelerine göre yapılmış olan P&I Kondisyon Surveyi neticesinde toplam ${defectNr} adet kusur bulunmuş, bunun yanı sıra toplam ${notinspectedNr} adet test ve inceleme de gerçekleştirilememiştir.
+
+Gerekli düzeltici aksiyonların alınmasından sonra bu eksikliklerin giderildiğine ve eksik testler ile incelemelerin uygun şekilde tamamlandığına dair ilgili dokümanlar (belge, fotoğraf ve özellikle video kaydı) Türk P ve I Sigorta A.Ş ye gönderilecektir.
+
+Buna göre sörvey esnasında tespit edilen eksiklikler ile tamamlanmamış test ve incelemelerle ilgili düzeltici aksiyon ve işlemlerin tamamlanabilmesi için tarafınıza, Su Araçları Sorumluluk Sigortasının özel şartlarının 15.7 numaralı maddesine göre ${deadline} tarihine kadar süre tanınmıştır. Bahse konu düzeltici işlemlerin ve bunlara ilişkin olarak sağlanan dokümanların yeterli bulunmaması durumunda Türk P ve I Sigorta A.Ş. bir takip surveyinin gerçekleştirilmesine gerek duyabilir.
+
+Düzeltici aksiyonların alındığı Türk P ve I Sigorta A.Ş. tarafından teyit edilene kadar geçen süre içerisinde, bu eksikliklerden ve tamamlanmamış testler ile incelemelerden kaynaklanabilecek hasarlar teminat kapsamı altında bulunmayacaktır.
+
+Bahse konu eksiklikler ile tamamlanmamış test ve incelemeler, sigortalıya e-posta yoluyla iletilen Kusur Listesi adlı belgede belirtilmiş olup, bu belge işbu zeyilnamenin ayrılmaz ve bağlayıcı bir parçasıdır. Sigortalı tarafından gerçekleştirilen düzeltici aksiyonların incelenmesine vabeste Türk P ve I Sigorta A.Ş tarafından Kusur Listesi'nde yapılabilecek güncellemeler, sigortalıya e-posta yoluyla yazılı olarak bildirildiği takdirde, ek bir zeyilnameye gerek olmaksızın yürürlük kazanacaktır.`;
+            } else if (templateSelection === 2) {
+                result = `As a result of the P&I Condition Survey carried out on your vessel on ${surveyDate}, at ${surveyPlace}, in accordance with Articles 15.3 and 15.4 of the Special Conditions of the Turk P ve I Sigorta A.S Sea Vehicle Liability Insurance, a total of ${defectNr} defects were identified. In addition, ${notinspectedNr} tests and inspections could not be performed.
+
+Once the necessary corrective actions have been taken, the relevant documentation (including certificates, photographs, and especially video recordings) proving that the identified defects have been rectified and the uncompleted tests and inspections have been properly carried out must be submitted to Turk P ve I Sigorta A.S.
+
+Accordingly, in order to complete the corrective actions related to the defects identified during the survey and the uncompleted tests and inspections, you are granted a deadline until ${deadline}, pursuant to Article 15.7 of the Special Conditions of the Sea Vehicle Liability Insurance. If the corrective actions and the documentation submitted thereon are deemed insufficient, Turk P ve I Sigorta A.S may require a follow-up survey to be conducted.
+
+Until the corrective actions have been confirmed by Turk P ve I Sigorta A.S, any damages arising from the identified defects or the uncompleted tests and inspections will not be covered under the insurance policy.
+
+The said defects and uncompleted tests and inspections are listed in the document titled Defect List, which has been sent to the insured via email. This document is to be deemed an integral and binding part of this addendum.
+
+Any updates made by Turk P ve I Sigorta A.S to the Defect List, following the review of corrective actions carried out by the insured, shall be deemed valid without the need for an additional endorsement, provided they are communicated to the insured in writing via email.`;
+            } else if (templateSelection === 3) {
+                result = `Geminizde ${surveyDate} tarihinde ${surveyPlace} Limanında Tekne Makine poliçe şartlarımız uyarınca yapılmış olan Tekne Makine Kondisyon Surveyi neticesinde toplam ${defectNr} adet kusur bulunmuş, bunun yanı sıra toplam ${notinspectedNr} adet test ve inceleme de gerçekleştirilememiştir.
+
+Gerekli düzeltici aksiyonların alınmasından sonra bu eksikliklerin giderildiğine ve eksik testler ile incelemelerin uygun şekilde tamamlandığına dair ilgili dokümanlar (belge, fotoğraf ve özellikle video kaydı) Türk P ve I Sigorta A.Ş ye gönderilecektir.
+
+Buna göre sörvey esnasında tespit edilen eksiklikler ile tamamlanmamış test ve incelemelerle ilgili düzeltici aksiyon ve işlemlerin tamamlanabilmesi için tarafınıza ${deadline} tarihine kadar süre tanınmıştır. Bahse konu düzeltici işlemlerin ve bunlara ilişkin olarak sağlanan dokümanların yeterli bulunmaması durumunda Türk P ve I Sigorta A.Ş. bir takip sörveyinin gerçekleştirilmesine gerek duyabilir.
+
+Düzeltici aksiyonların alındığı Türk P ve I Sigorta A.Ş. tarafından teyit edilene kadar geçen süre içerisinde, bu eksikliklerden ve tamamlanmamış testler ile incelemelerden kaynaklanabilecek hasarlar teminat kapsamı altında bulunmayacaktır.
+
+Bahse konu eksiklikler ile tamamlanmamış test ve incelemeler, sigortalıya e-posta yoluyla iletilen Kusur Listesi adlı belgede belirtilmiş olup, bu belge işbu zeyilnamenin ayrılmaz ve bağlayıcı bir parçasıdır. Sigortalı tarafından gerçekleştirilen düzeltici aksiyonların incelenmesine vabeste Türk P ve I Sigorta A.Ş tarafından Kusur Listesi'nde yapılabilecek güncellemeler, sigortalıya e-posta yoluyla yazılı olarak bildirildiği takdirde, ek bir zeyilnameye gerek olmaksızın yürürlük kazanacaktır.`;
+            } else if (templateSelection === 4) {
+                result = `As a result of the H&M Condition Survey carried out on your vessel on ${surveyDate}, at ${surveyPlace} Port, in accordance with Hull and Machinery policy, a total of ${defectNr} defects were identified. In addition, ${notinspectedNr} tests and inspections could not be performed.
+
+Once the necessary corrective actions have been taken, the relevant documentation (including certificates, photographs, and especially video recordings) proving that the identified defects have been rectified and the uncompleted tests and inspections have been properly carried out must be submitted to Turk P ve I Sigorta A.S.
+
+Accordingly, in order to complete the corrective actions related to the defects identified during the survey and the uncompleted tests and inspections, you are granted a deadline until ${deadline}. If the corrective actions and the documentation submitted thereon are deemed insufficient, Turk P ve I Sigorta A.S may require a follow-up survey to be conducted.
+
+Until the corrective actions have been confirmed by Turk P ve I Sigorta A.S, any damages arising from the identified defects or the uncompleted tests and inspections will not be covered under the insurance policy.
+
+The said defects and uncompleted tests and inspections are listed in the document titled Defect List, which has been sent to the insured via email. This document is to be deemed an integral and binding part of this addendum.
+
+Any updates made by Turk P ve I Sigorta A.S to the Defect List, following the review of corrective actions carried out by the insured, shall be deemed valid without the need for an additional endorsement, provided they are communicated to the insured in writing via email.`;
+            } else if (templateSelection === 5) {
+                const reasonSelection = parseInt(document.getElementById('reason_selection').value);
+                const reason = reasonSelection === 1 ? "olumsuz sonuçlanması" : "gerçekleştirilememesi";
+                result = `Geminizde ${surveyDate} tarihinde ${surveyPlace} Limanında Türk P ve I Sigorta A.S Su Araçları Sorumluluk Sigortası özel şartlarının 15.3 ve 15.4 numaralı maddelerine göre yapılmış olan P&I Kondisyon Surveyi neticesinde toplam ${defectNr} adet kusur bulunmuş, bunun yanı sıra toplam ${notinspectedNr} adet test ve inceleme de gerçekleştirilememiştir.
+
+Bunun yanı sıra survey sırasında ambar kapak sızdırmazlık testlerinin ${reason} göz önüne alınarak, surveyin tamamlandığı ${surveyDate} tarihinden itibaren tüm yük ıslaklık hasarlarının Türk P&I Sigorta teminatı altında bulunmayacağına karar verilmiştir.
+
+Gerekli düzeltici aksiyonların alınmasından sonra bu eksikliklerin giderildiğine ve eksik testler ile incelemelerin uygun şekilde tamamlandığına dair ilgili dokümanlar (belge, fotoğraf ve özellikle video kaydı) Türk P ve I Sigorta A.Ş ye gönderilecektir.
+
+Buna göre sörvey esnasında tespit edilen eksiklikler ile tamamlanmamış test ve incelemelerle ilgili düzeltici aksiyon ve işlemlerin tamamlanabilmesi ve bir Takip Sörveyi gerçekleştirilmesi için tarafınıza, Su Araçları Sorumluluk Sigortasının özel şartlarının 15.7 numaralı maddesine göre ${deadline} tarihine kadar süre tanınmıştır.
+
+Düzeltici aksiyonların alındığı Türk P ve I Sigorta A.Ş. tarafından teyit edilene kadar geçen süre içerisinde, bu eksikliklerden ve tamamlanmamış testler ile incelemelerden kaynaklanabilecek hasarlar teminat kapsamı altında bulunmayacaktır.
+
+Bahse konu eksiklikler ile tamamlanmamış test ve incelemeler, sigortalıya e-posta yoluyla iletilen Kusur Listesi adlı belgede belirtilmiş olup, bu belge işbu zeyilnamenin ayrılmaz ve bağlayıcı bir parçasıdır. Sigortalı tarafından gerçekleştirilen düzeltici aksiyonların incelenmesine vabeste Türk P ve I Sigorta A.Ş tarafından Kusur Listesi'nde yapılabilecek güncellemeler, sigortalıya e-posta yoluyla yazılı olarak bildirildiği takdirde, ek bir zeyilnameye gerek olmaksızın yürürlük kazanacaktır.`;
+            } else if (templateSelection === 6) {
+                const reasonSelection = parseInt(document.getElementById('reason_selection').value);
+                const reason = reasonSelection === 1 ? "unsatisfactory result of hatch cover ultrasonic test" : "hatch cover ultrasonic test not being conducted";
+                result = `As a result of the P&I Condition Survey carried out on your vessel on ${surveyDate}, at ${surveyPlace} Port, in accordance with Articles 15.3 and 15.4 of the Special Conditions of the Turk P ve I Sigorta A.S Sea Vehicle Liability Insurance, a total of ${defectNr} defects were identified. In addition, ${notinspectedNr} tests and inspections could not be performed.
+
+Additionally, due to the ${reason}, it was decided that from the date of completion of the survey on ${surveyDate}, all cargo wetness damages will not be covered under Turk P&I Insurance.
+
+Once the necessary corrective actions have been taken, the relevant documentation (including certificates, photographs, and especially video recordings) proving that the identified defects have been rectified and the uncompleted tests and inspections have been properly carried out must be submitted to Turk P ve I Sigorta A.S.
+
+Accordingly, you are granted a deadline until ${deadline} in accordance with Article 15.7 of the Special Conditions of the Sea Vehicle Liability Insurance for the completion of corrective actions related to the identified defects and uncompleted tests and inspections, and for the follow-up survey to be conducted.
+
+Until the corrective actions have been confirmed by Turk P ve I Sigorta A.S, any damages arising from the identified defects or the uncompleted tests and inspections will not be covered under the insurance policy.
+
+The said defects and uncompleted tests and inspections are listed in the document titled Defect List, which has been sent to the insured via email. This document is to be deemed an integral and binding part of this addendum. Any updates made by Turk P ve I Sigorta A.S to the Defect List, following the review of corrective actions carried out by the insured, shall be deemed valid without the need for an additional endorsement, provided they are communicated to the insured in writing via email.`;
+            }
+
+            resultText.textContent = result;
+            resultContainer.classList.add('show');
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        function copyToClipboard() {
+            const text = resultText.textContent;
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#1e7e34';
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+
+        function resetForm() {
+            form.reset();
+            resultContainer.classList.remove('show');
+            reasonGroup.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
