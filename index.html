@@ -10,14 +10,14 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
+        
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -26,25 +26,25 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             padding: 40px;
         }
-
+        
         h1 {
             color: #333;
             margin-bottom: 30px;
             text-align: center;
             font-size: 28px;
         }
-
+        
         .form-group {
             margin-bottom: 20px;
         }
-
+        
         label {
             display: block;
             margin-bottom: 8px;
             color: #555;
             font-weight: 600;
         }
-
+        
         input, select, textarea {
             width: 100%;
             padding: 12px;
@@ -53,12 +53,12 @@
             font-size: 14px;
             transition: border-color 0.3s;
         }
-
+        
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-
+        
         button {
             width: 100%;
             padding: 14px;
@@ -71,16 +71,16 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
+        
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
-
+        
         button:active {
             transform: translateY(0);
         }
-
+        
         .result-container {
             display: none;
             margin-top: 30px;
@@ -89,46 +89,87 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
-
+        
         .result-container.show {
             display: block;
         }
-
+        
         .result-text {
             white-space: pre-wrap;
             line-height: 1.8;
             color: #333;
             font-size: 14px;
         }
-
+        
         .button-group {
             display: flex;
             gap: 10px;
             margin-top: 20px;
         }
-
+        
         .button-group button {
             flex: 1;
         }
-
+        
         .copy-btn {
             background: #28a745;
         }
-
+        
         .copy-btn:hover {
             background: #218838;
         }
-
+        
         .reset-btn {
             background: #6c757d;
         }
-
+        
         .reset-btn:hover {
             background: #5a6268;
         }
-
+        
         .hidden {
             display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            color: #666;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-button:hover {
+            background: #f8f9fa;
+            color: #667eea;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: transparent;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -145,10 +186,16 @@
                 Incorrect password. Please try again.
             </div>
         </div>
-
+        
         <div id="mainContent" style="display: none;">
-            <h1>Addendum Generator by LP :)</h1>
-
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('addendum')">Addendum Generator</button>
+                <button class="tab-button" onclick="switchTab('appointment')">Survey Appointment</button>
+            </div>
+            
+            <div id="addendumTab" class="tab-content active">
+            <h1>Insurance Addendum Generator</h1>
+            
             <form id="addendumForm">
             <div class="form-group">
                 <label for="template_selection">Select Template:</label>
@@ -161,32 +208,32 @@
                     <option value="6">Cargo Wetness P&I (English)</option>
                 </select>
             </div>
-
+            
             <div class="form-group">
                 <label for="survey_date">Survey Date:</label>
                 <input type="text" id="survey_date" name="survey_date" placeholder="e.g., 15.01.2026" required>
             </div>
-
+            
             <div class="form-group">
                 <label for="survey_place">Survey Place:</label>
                 <input type="text" id="survey_place" name="survey_place" placeholder="e.g., Istanbul" required>
             </div>
-
+            
             <div class="form-group">
                 <label for="defect_nr">Number of Defects:</label>
                 <input type="text" id="defect_nr" name="defect_nr" placeholder="e.g., 5" required>
             </div>
-
+            
             <div class="form-group">
                 <label for="notinspected_nr">Number of Not Inspected:</label>
                 <input type="text" id="notinspected_nr" name="notinspected_nr" placeholder="e.g., 2" required>
             </div>
-
+            
             <div class="form-group">
                 <label for="deadline">Deadline:</label>
                 <input type="text" id="deadline" name="deadline" placeholder="e.g., 30.02.2026" required>
             </div>
-
+            
             <div class="form-group hidden" id="reasonGroup">
                 <label for="reason_selection">Reason:</label>
                 <select id="reason_selection" name="reason_selection">
@@ -194,10 +241,10 @@
                     <option value="2">Not Being Conducted / Gerçekleştirilememesi</option>
                 </select>
             </div>
-
+            
             <button type="submit">Generate Addendum</button>
         </form>
-
+        
         <div class="result-container" id="resultContainer">
             <h2 style="margin-bottom: 15px; color: #667eea;">Generated Addendum:</h2>
             <div class="result-text" id="resultText"></div>
@@ -207,16 +254,73 @@
             </div>
         </div>
         </div>
+        
+        <div id="appointmentTab" class="tab-content">
+            <h1>Survey Appointment Generator</h1>
+            
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label for="appointment_template">Select Template:</label>
+                    <select id="appointment_template" name="appointment_template" required>
+                        <option value="1">P&I Appointment (Turkish)</option>
+                        <option value="2">P&I Appointment (English)</option>
+                        <option value="3">H&M Appointment (Turkish)</option>
+                        <option value="4">H&M Appointment (English)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="management">Management:</label>
+                    <input type="text" id="management" name="management" placeholder="e.g., ABC Shipping Ltd." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="vessel_name">Vessel Name:</label>
+                    <input type="text" id="vessel_name" name="vessel_name" placeholder="e.g., MV OCEAN STAR" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imo">IMO:</label>
+                    <input type="text" id="imo" name="imo" placeholder="e.g., 9123456" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointment_deadline">Deadline:</label>
+                    <input type="text" id="appointment_deadline" name="appointment_deadline" placeholder="e.g., 31.12.2026" required>
+                </div>
+                
+                <div class="form-group hidden" id="valuationGroup">
+                    <label for="valuation">Valuation Survey Required:</label>
+                    <select id="valuation" name="valuation">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Generate Appointment</button>
+            </form>
+            
+            <div class="result-container" id="appointmentResultContainer">
+                <h2 style="margin-bottom: 15px; color: #667eea;">Generated Appointment:</h2>
+                <div class="result-text" id="appointmentResultText"></div>
+                <div class="button-group">
+                    <button type="button" class="copy-btn" onclick="copyAppointmentToClipboard()">Copy to Clipboard</button>
+                    <button type="button" class="reset-btn" onclick="resetAppointmentForm()">Generate Another</button>
+                </div>
+            </div>
+        </div>
+        
+        </div>
     </div>
-
+    
     <script>
         // Password protection
-        const correctPassword = "TPI2026"; // Change this to your desired password
-
+        const correctPassword = "TurkPI2026"; // Change this to your desired password
+        
         function checkPassword() {
             const input = document.getElementById('passwordInput').value;
             const errorMessage = document.getElementById('errorMessage');
-
+            
             if (input === correctPassword) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
@@ -227,7 +331,7 @@
                 document.getElementById('passwordInput').focus();
             }
         }
-
+        
         // Allow Enter key to submit password
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('passwordInput').addEventListener('keypress', function(e) {
@@ -236,13 +340,143 @@
                 }
             });
         });
+        
+        // Tab switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (tabName === 'addendum') {
+                document.getElementById('addendumTab').classList.add('active');
+                buttons[0].classList.add('active');
+            } else {
+                document.getElementById('appointmentTab').classList.add('active');
+                buttons[1].classList.add('active');
+            }
+        }
+        
+        // Appointment form handling
+        const appointmentTemplateSelect = document.getElementById('appointment_template');
+        const valuationGroup = document.getElementById('valuationGroup');
+        const appointmentForm = document.getElementById('appointmentForm');
+        const appointmentResultContainer = document.getElementById('appointmentResultContainer');
+        const appointmentResultText = document.getElementById('appointmentResultText');
+        
+        appointmentTemplateSelect.addEventListener('change', function() {
+            if (this.value === '3' || this.value === '4') {
+                valuationGroup.classList.remove('hidden');
+            } else {
+                valuationGroup.classList.add('hidden');
+            }
+        });
+        
+        appointmentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const templateSelection = parseInt(document.getElementById('appointment_template').value);
+            const management = document.getElementById('management').value;
+            const vesselName = document.getElementById('vessel_name').value.toUpperCase();
+            const imo = document.getElementById('imo').value;
+            const deadline = document.getElementById('appointment_deadline').value;
+            const valuation = document.getElementById('valuation').value;
+            
+            let result = '';
+            
+            if (templateSelection === 1) {
+                result = `${management} bünyesinde bulunan "${vesselName}" (IMO No. ${imo}) gemisinin P&I Kondisyon Sörveyinin yapılması için tarafınızca sörveyor atanmasını talep etmekteyiz. Yapılacak sörveyin en geç ${deadline} tarihine kadar gerçekleştirilmesi gerekmektedir. Bahse konu sörveye yönelik uygunluğunuzun teyidini rica ederiz.
 
+Sörvey ücreti sigortalı tarafından firmanıza direkt olarak ödenecektir. Sörvey ücreti, sörvey yeri ve tarihiyle ilgili hususlarda mutabık kalınabilmesi için iletişim kurulabilecek firma yetkililerinin detayları aşağıdaki gibidir.
+
++++
+(Empty Space to add Contact details)
++++
+
+P&I Kondisyon Sörvey raporunun online "Türk P&I Sigorta – Nozzle" platformu üzerine kaydedilebilmesi için konu atama tarafınıza tanımlanmıştır, sistem üzerinden görüntüleyebilirsiniz. Mevcutta sizlerle paylaşılan Kullanıcı adı ve Şifre bilgileriniz ile sisteme "https://turkpi.nozzlesoft.com/" erişim sağlayabilirsiniz.
+
+1.Kusur Listesi içerisinde yer alan eksikliklerle ilgili referans olabilecek resimlerin, altlarında açıklamaları da yazacak şekilde " Defect Photos " adı altında bir fotoğraf dokümanı olarak sistem içerisindeki " Enclosures " bölümüne Word dosyası olarak,
+
+2.Kusurlu maddeler dışında kalan ve gemiyle ilgili genel fikir verebilecek diğer fotoğrafların da, altlarında açıklamaları yazacak şekilde " Photos - General Overview " adı altında bir fotoğraf dokümanı olarak yine sistem içerisindeki " Enclosures " bölümüne Word dosyası olarak yüklenmesi gerekmektedir. (görsel kayıtları ekte bulunan Word belgesi üzerine ekleyebilirsiniz)
+
+Bahse konu sörveyi müteakiben ön raporu 24 saat içerisinde, final raporunu da 5 gün içinde tarafımıza ulaştırmanızı ve işbu talimatın alındığının teyidini rica ederiz.
+
+Kolaylıklar dileriz, iyi çalışmalar.`;
+            } else if (templateSelection === 2) {
+                result = `Good day,
+
+We would like to carry out a P&I Condition Survey (including HC US test) onboard ${vesselName} (IMO ${imo}). The survey should be completed till ${deadline}
+
+You have been appointed to the subject survey on the Nozzle system. Relevant records can be accessed using the previously provided credentials.
+* All pictures in reference to the deficiencies found onboard must be collected in a word document, labeled as "Defect Photos" and submitted to the "Enclosures" section in the system.
+* All pictures other than the "Defect Photos" must be collected in a word document (including descriptions written below every image), labeled as "Photos- General Overview" and submitted to the "Enclosures" section in the system, for us to get an idea on the overall condition of the vessel. (You may add the pictures to the enclosed word document.)
+You are expected to submit your preliminary report (defects list and defect photos) in 24 hours and the final report in 5 days from the time which survey is completed. Also, please provide regular updates regarding the planning stage and any changes on the date and place of the survey.
+Kindly confirm your availability to carry out the above mentioned survey, and please feel free to contact at any time for any questions or clarifications.`;
+            } else if (templateSelection === 3) {
+                const valuationText = valuation === 'yes' ? ' ve Değer Tespit' : '';
+                result = `${management} bünyesinde bulunan "${vesselName}" (IMO No. ${imo}) gemisinin H&M Kondisyon${valuationText} Sörveyinin yapılması için tarafınızca sörveyor atanmasını talep etmekteyiz. Yapılacak sörveyin en geç ${deadline} tarihine kadar gerçekleştirilmesi gerekmektedir. Bahse konu sörveye yönelik uygunluğunuzun teyidini rica ederiz.
+
+Sörvey ücreti sigortalı tarafından firmanıza direkt olarak ödenecektir. Sörvey ücreti, sörvey yeri ve tarihiyle ilgili hususlarda mutabık kalınabilmesi için iletişim kurulabilecek firma yetkililerinin detayları aşağıdaki gibidir.
+
++++
+(Empty Space to add Contact details)
++++
+
+H&M Kondisyon Sörvey raporunun online "Türk P&I Sigorta – Nozzle" platformu üzerine kaydedilebilmesi için konu atama tarafınıza tanımlanmıştır, sistem üzerinden görüntüleyebilirsiniz. Mevcutta sizlerle paylaşılan Kullanıcı adı ve Şifre bilgileriniz ile sisteme "https://turkpi.nozzlesoft.com/" erişim sağlayabilirsiniz.
+
+1.Kusur Listesi içerisinde yer alan eksikliklerle ilgili referans olabilecek resimlerin, altlarında açıklamaları da yazacak şekilde " Defect Photos " adı altında bir fotoğraf dokümanı olarak sistem içerisindeki " Enclosures " bölümüne Word dosyası olarak,
+
+2.Kusurlu maddeler dışında kalan ve gemiyle ilgili genel fikir verebilecek diğer fotoğrafların da, altlarında açıklamaları yazacak şekilde " Photos - General Overview " adı altında bir fotoğraf dokümanı olarak yine sistem içerisindeki " Enclosures " bölümüne Word dosyası olarak yüklenmesi gerekmektedir. (görsel kayıtları ekte bulunan Word belgesi üzerine ekleyebilirsiniz)
+
+Bahse konu sörveyi müteakiben ön raporu 24 saat içerisinde, final raporunu da 5 gün içinde tarafımıza ulaştırmanızı ve işbu talimatın alındığının teyidini rica ederiz.
+
+Kolaylıklar dileriz, iyi çalışmalar.`;
+            } else if (templateSelection === 4) {
+                const valuationText = valuation === 'yes' ? ' and Valuation' : '';
+                result = `Good day,
+
+We would like to carry out a H&M Condition${valuationText} Survey onboard ${vesselName} (IMO ${imo}). The survey should be completed till ${deadline}
+
+You have been appointed to the subject survey on the Nozzle system. Relevant records can be accessed using the previously provided credentials.
+* All pictures in reference to the deficiencies found onboard must be collected in a word document, labeled as "Defect Photos" and submitted to the "Enclosures" section in the system.
+* All pictures other than the "Defect Photos" must be collected in a word document (including descriptions written below every image), labeled as "Photos- General Overview" and submitted to the "Enclosures" section in the system, for us to get an idea on the overall condition of the vessel. (You may add the pictures to the enclosed word document.)
+You are expected to submit your preliminary report (defect list, defect photos and US test results) in 24 hours and the final report in 5 days from the time which survey is completed. Also, please provide regular updates regarding the planning stage and any changes on the date and place of the survey.
+Kindly confirm your availability to carry out the above mentioned survey, and please feel free to contact at any time for any questions or clarifications.`;
+            }
+            
+            appointmentResultText.textContent = result;
+            appointmentResultContainer.classList.add('show');
+            appointmentResultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        
+        function copyAppointmentToClipboard() {
+            const text = appointmentResultText.textContent;
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#1e7e34';
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+        
+        function resetAppointmentForm() {
+            appointmentForm.reset();
+            appointmentResultContainer.classList.remove('show');
+            valuationGroup.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
         const templateSelect = document.getElementById('template_selection');
         const reasonGroup = document.getElementById('reasonGroup');
         const form = document.getElementById('addendumForm');
         const resultContainer = document.getElementById('resultContainer');
         const resultText = document.getElementById('resultText');
-
+        
         templateSelect.addEventListener('change', function() {
             if (this.value === '5' || this.value === '6') {
                 reasonGroup.classList.remove('hidden');
@@ -250,19 +484,19 @@
                 reasonGroup.classList.add('hidden');
             }
         });
-
+        
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-
+            
             const templateSelection = parseInt(document.getElementById('template_selection').value);
             const surveyDate = document.getElementById('survey_date').value;
             const surveyPlace = document.getElementById('survey_place').value;
             const defectNr = document.getElementById('defect_nr').value;
             const notinspectedNr = document.getElementById('notinspected_nr').value;
             const deadline = document.getElementById('deadline').value;
-
+            
             let result = '';
-
+            
             if (templateSelection === 1) {
                 result = `Geminizde ${surveyDate} tarihinde ${surveyPlace} Limanında Türk P ve I Sigorta A.S Su Araçları Sorumluluk Sigortası özel şartlarının 15.3 ve 15.4 numaralı maddelerine göre yapılmış olan P&I Kondisyon Surveyi neticesinde toplam ${defectNr} adet kusur bulunmuş, bunun yanı sıra toplam ${notinspectedNr} adet test ve inceleme de gerçekleştirilememiştir.
 
@@ -336,12 +570,12 @@ Until the corrective actions have been confirmed by Turk P ve I Sigorta A.S, any
 
 The said defects and uncompleted tests and inspections are listed in the document titled Defect List, which has been sent to the insured via email. This document is to be deemed an integral and binding part of this addendum. Any updates made by Turk P ve I Sigorta A.S to the Defect List, following the review of corrective actions carried out by the insured, shall be deemed valid without the need for an additional endorsement, provided they are communicated to the insured in writing via email.`;
             }
-
+            
             resultText.textContent = result;
             resultContainer.classList.add('show');
             resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
-
+        
         function copyToClipboard() {
             const text = resultText.textContent;
             navigator.clipboard.writeText(text).then(function() {
@@ -355,7 +589,7 @@ The said defects and uncompleted tests and inspections are listed in the documen
                 }, 2000);
             });
         }
-
+        
         function resetForm() {
             form.reset();
             resultContainer.classList.remove('show');
@@ -364,5 +598,4 @@ The said defects and uncompleted tests and inspections are listed in the documen
         }
     </script>
 </body>
-
 </html>
